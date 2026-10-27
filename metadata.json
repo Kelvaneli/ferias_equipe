@@ -1,0 +1,8 @@
+{
+  "name": "Gestor de Férias da Equipe",
+  "description": "Sistema interativo e responsivo para gerenciamento, calendário visual compartilhado e métricas de férias da equipe com Firebase e persistência em nuvem.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

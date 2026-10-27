@@ -1,0 +1,102 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Default deny all unknown paths
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'kelvaneli@gmail.com'
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidVacation(data) {
+      return data.keys().hasAll(['employeeName', 'startDate', 'endDate', 'color', 'userId', 'userEmail']) &&
+             data.employeeName is string && data.employeeName.size() >= 1 && data.employeeName.size() <= 100 &&
+             data.startDate is string && data.startDate.size() == 10 &&
+             data.endDate is string && data.endDate.size() == 10 &&
+             data.color is string && data.color.size() >= 4 && data.color.size() <= 9 &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.userEmail is string && data.userEmail.size() >= 3 && data.userEmail.size() <= 150 &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 500)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 50)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50));
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['userId', 'displayName', 'email', 'favoriteColor']) &&
+             data.userId is string && data.userId.size() >= 1 && data.userId.size() <= 128 &&
+             data.displayName is string && data.displayName.size() >= 1 && data.displayName.size() <= 100 &&
+             data.email is string && data.email.size() >= 3 && data.email.size() <= 150 &&
+             data.favoriteColor is string && data.favoriteColor.size() >= 4 && data.favoriteColor.size() <= 9 &&
+             (!('photoURL' in data) || (data.photoURL is string && data.photoURL.size() <= 1000)) &&
+             (!('jobTitle' in data) || (data.jobTitle is string && data.jobTitle.size() <= 100)) &&
+             (!('department' in data) || (data.department is string && data.department.size() <= 100)) &&
+             (!('phone' in data) || (data.phone is string && data.phone.size() <= 30)) &&
+             (!('bio' in data) || (data.bio is string && data.bio.size() <= 500)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 50));
+    }
+
+    // Vacations Collection
+    // All authenticated users can view all team vacation records
+    // Only the creator (or admin) can create, edit, or delete their own records
+    match /vacations/{vacationId} {
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn() &&
+                       isValidId(vacationId) &&
+                       isValidVacation(incoming()) &&
+                       incoming().userId == request.auth.uid;
+
+      allow update: if isSignedIn() &&
+                       isValidId(vacationId) &&
+                       isValidVacation(incoming()) &&
+                       (isAdmin() || (existing().userId == request.auth.uid && incoming().userId == existing().userId));
+
+      allow delete: if isSignedIn() &&
+                       isValidId(vacationId) &&
+                       (isAdmin() || existing().userId == request.auth.uid);
+    }
+
+    // User Profiles Collection
+    // All authenticated users can view teammates profiles
+    // Users can only create, update or delete their own profile
+    match /users/{userId} {
+      allow read: if isSignedIn();
+
+      allow create, update: if isSignedIn() &&
+                               isValidId(userId) &&
+                               request.auth.uid == userId &&
+                               isValidUserProfile(incoming()) &&
+                               incoming().userId == request.auth.uid;
+
+      allow delete: if isSignedIn() &&
+                       isValidId(userId) &&
+                       request.auth.uid == userId;
+    }
+
+    // Connection test document
+    match /test/connection {
+      allow read: if true;
+    }
+  }
+}

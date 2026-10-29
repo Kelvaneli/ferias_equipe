@@ -305,7 +305,7 @@ export default function App() {
       showToast('Perfil e preferências de férias atualizados com sucesso!', 'success');
     } catch (error: any) {
       console.error('Erro ao salvar perfil:', error);
-      showToast(error.message || 'Erro ao salvar perfil no banco.', 'error');
+      showToast('Não foi possível salvar o perfil no banco de dados.', 'error');
       throw error;
     }
   };
@@ -374,24 +374,9 @@ export default function App() {
       }
     } catch (error: any) {
       console.error('Erro ao salvar férias:', error);
-      // Fallback local update if network offline
-      if (syncStatus === 'offline') {
-        const fallbackList = editingVacation 
-          ? vacations.map(v => v.id === editingVacation.id ? { ...v, ...vacationData } : v)
-          : [...vacations, {
-              id: 'local_' + Date.now(),
-              ...vacationData,
-              userId: currentUser?.uid || 'offline',
-              userEmail: currentUser?.email || 'local@offline.com'
-            }];
-        setVacations(fallbackList);
-        localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(fallbackList));
-        setEditingVacation(null);
-        showToast('Salvo em cache local (offline).', 'info');
-      } else {
-        showToast(error.message || 'Erro ao comunicar com o Firebase.', 'error');
-        throw error;
-      }
+      // Never save only locally: records that don't reach Firestore are lost to the team
+      showToast('Não foi possível salvar no banco de dados. Verifique sua conexão e tente novamente.', 'error');
+      throw error;
     } finally {
       setIsSubmitting(false);
     }
@@ -415,7 +400,7 @@ export default function App() {
       showToast('Registro de férias excluído.', 'info');
     } catch (error: any) {
       console.error('Erro ao excluir férias:', error);
-      showToast(error.message || 'Não foi possível excluir o registro.', 'error');
+      showToast('Não foi possível excluir o registro no banco de dados.', 'error');
     }
   };
 
@@ -447,22 +432,14 @@ export default function App() {
       showToast('Dados de demonstração carregados com sucesso no banco!', 'success');
     } catch (error: any) {
       console.error('Erro ao carregar dados de demonstração:', error);
-      const mockWithIds = INITIAL_DEMO_VACATIONS.map((item, idx) => ({
-        id: 'local_demo_' + idx,
-        ...item,
-        userId: currentUser?.uid || 'local',
-        userEmail: currentUser?.email || item.userEmail
-      }));
-      setVacations(mockWithIds);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(mockWithIds));
-      showToast('Dados de demonstração carregados localmente.', 'info');
+      showToast('Não foi possível gravar os dados de demonstração no banco de dados.', 'error');
     }
   };
 
   // Trigger confirmation dialog for clearing user records
   const handleClearMyData = () => {
     if (!currentUser) return;
-    const myVacations = vacations.filter(v => v.userId === currentUser.uid || isAdmin);
+    const myVacations = vacations.filter(v => v.userId === currentUser.uid);
     if (myVacations.length === 0) {
       showToast('Você não possui registros para remover.', 'info');
       return;
@@ -472,7 +449,7 @@ export default function App() {
 
   const executeClearMyData = async () => {
     if (!currentUser) return;
-    const myVacations = vacations.filter(v => v.userId === currentUser.uid || isAdmin);
+    const myVacations = vacations.filter(v => v.userId === currentUser.uid);
     setIsClearConfirmOpen(false);
 
     try {

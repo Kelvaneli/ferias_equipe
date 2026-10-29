@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Routes, Route, Navigate, Outlet, useNavigate } from 'react-router';
 import { 
   onAuthStateChanged, 
   signInWithPopup, 
@@ -28,7 +29,8 @@ import { VacationCalendar } from './components/VacationCalendar';
 import { VacationForm } from './components/VacationForm';
 import { VacationTable } from './components/VacationTable';
 import { VacationChart } from './components/VacationChart';
-import { LoginPrompt } from './components/LoginPrompt';
+import { LoginPage } from './components/LoginPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { ProfileModal } from './components/ProfileModal';
 import { 
   CalendarCheck, 
@@ -92,6 +94,7 @@ const INITIAL_DEMO_VACATIONS: Omit<Vacation, 'id'>[] = [
 ];
 
 export default function App() {
+  const navigate = useNavigate();
   const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(null);
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
     try {
@@ -180,6 +183,9 @@ export default function App() {
 
   // Real-time Firestore sync with vacations collection
   useEffect(() => {
+    // Firestore rules only allow reads for signed-in users
+    if (!currentUser) return;
+
     const vacationsCol = collection(db, 'vacations');
 
     const unsubscribe = onSnapshot(
@@ -237,6 +243,11 @@ export default function App() {
       await signOut(auth);
       setEditingVacation(null);
       setUserProfile(null);
+      // Don't leave team data behind on a shared computer
+      setVacations([]);
+      localStorage.removeItem(LOCAL_STORAGE_KEY);
+      localStorage.removeItem(USER_PROFILE_CACHE_KEY);
+      navigate('/login');
       showToast('Você saiu da sua conta.', 'info');
     } catch (error) {
       console.error('Erro ao sair:', error);
@@ -475,7 +486,15 @@ export default function App() {
   const userTotalVacationDays = myVacations.reduce((acc, v) => acc + calculateDaysBetween(v.startDate, v.endDate), 0);
   const userVacationCount = myVacations.length;
 
-  return (
+  // Edit buttons live on calendar/table; the form lives on the home route
+  const openVacationEditor = (v: Vacation) => {
+    setEditingVacation(v);
+    navigate('/');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Shared layout for all authenticated routes
+  const appShell = (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-800">
       {/* Top Navbar */}
       <Navbar
@@ -490,6 +509,130 @@ export default function App() {
         isAdmin={isAdmin}
       />
 
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
+        <Outlet />
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-500 mt-12">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-slate-700">FériasEquipe</span>
+            <span>•</span>
+            <span>Gestão e Visualização de Férias Compartilhadas</span>
+          </div>
+          <div className="flex items-center gap-4 text-[11px] text-slate-400">
+            <span>Firebase Firestore Enterprise</span>
+            <span>•</span>
+            <span>Autenticação Google</span>
+            <span>•</span>
+            <span>Chart.js Gráficos</span>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+
+  // Home route: profile bar + registration form + calendar
+  const calendarPage = (
+    <>
+      {/* Profile Quick Bar for logged in user */}
+      {currentUser && userProfile && (
+        <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div
+              className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0"
+              style={{ backgroundColor: userProfile.favoriteColor }}
+            >
+              {userProfile.photoURL ? (
+                <img src={userProfile.photoURL} alt={userProfile.displayName} className="w-full h-full object-cover rounded-xl" />
+              ) : (
+                userProfile.displayName.charAt(0).toUpperCase()
+              )}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-sm font-bold text-slate-800">
+                  Olá, {userProfile.displayName}!
+                </h2>
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
+                  {userProfile.department || 'Equipe'}
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                {userVacationCount > 0
+                  ? `Você possui ${userVacationCount} período(s) agendado(s) totalizando ${userTotalVacationDays} dias.`
+                  : 'Você ainda não cadastrou períodos de férias este ano.'}
+              </p>
+            </div>
+          </div>
+
+          <button
+            onClick={() => setIsProfileModalOpen(true)}
+            className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/70 rounded-xl transition-all cursor-pointer self-start sm:self-auto shrink-0 shadow-2xs"
+          >
+            <UserCog className="w-4 h-4 text-indigo-600" />
+            <span>Editar Meus Dados de Perfil</span>
+          </button>
+        </div>
+      )}
+
+      {/* Top Split: Form + Calendar */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Vacation Registration Form */}
+        <div className="lg:col-span-5 flex flex-col gap-4">
+          <VacationForm
+            onSaveVacation={handleSaveVacation}
+            editingVacation={editingVacation}
+            onCancelEdit={() => setEditingVacation(null)}
+            existingVacations={vacations}
+            isSubmitting={isSubmitting}
+            currentUserProfile={userProfile}
+            currentUserEmail={currentUser?.email || undefined}
+          />
+
+          {/* Helper card */}
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex items-center justify-between text-xs text-slate-600">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
+                i
+              </div>
+              <div>
+                <p className="font-bold text-slate-800">Transparência da Equipe</p>
+                <p className="text-[11px] text-slate-500">
+                  Todos visualizam as datas para evitar ausências simultâneas na mesma área.
+                </p>
+              </div>
+            </div>
+
+            {currentUser && vacations.some(v => v.userId === currentUser.uid) && (
+              <button
+                onClick={handleClearMyData}
+                title="Limpar todos os meus registros cadastrados"
+                className="px-2.5 py-1.5 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer shrink-0"
+              >
+                Limpar Meus
+              </button>
+            )}
+          </div>
+        </div>
+
+        {/* Monthly Calendar View */}
+        <div className="lg:col-span-7">
+          <VacationCalendar
+            vacations={vacations}
+            onSelectVacationForEdit={openVacationEditor}
+            currentUserId={currentUser?.uid}
+            isAdmin={isAdmin}
+          />
+        </div>
+      </div>
+    </>
+  );
+
+  return (
+    <>
       {/* User Profile Modal */}
       {currentUser && (
         <ProfileModal
@@ -540,8 +683,8 @@ export default function App() {
       {notification && (
         <div className="fixed bottom-5 right-5 z-50 animate-in slide-in-from-bottom-3 duration-200">
           <div className={`px-4 py-3 rounded-2xl shadow-xl border text-xs font-semibold flex items-center gap-2.5 max-w-md ${
-            notification.type === 'success' 
-              ? 'bg-emerald-900 text-emerald-100 border-emerald-700' 
+            notification.type === 'success'
+              ? 'bg-emerald-900 text-emerald-100 border-emerald-700'
               : notification.type === 'error'
               ? 'bg-rose-900 text-rose-100 border-rose-700'
               : 'bg-slate-900 text-slate-100 border-slate-700'
@@ -554,146 +697,41 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-8">
-        
-        {/* Banner if unauthenticated */}
-        {!currentUser && !authLoading && (
-          <LoginPrompt onLogin={handleLogin} isLoading={authLoading} />
-        )}
+      <Routes>
+        <Route
+          path="/login"
+          element={<LoginPage user={currentUser} onLogin={handleLogin} isLoading={authLoading} />}
+        />
 
-        {/* Profile Quick Bar for logged in user */}
-        {currentUser && userProfile && (
-          <div className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div 
-                className="w-11 h-11 rounded-xl flex items-center justify-center text-white font-bold text-sm shadow-xs shrink-0"
-                style={{ backgroundColor: userProfile.favoriteColor }}
-              >
-                {userProfile.photoURL ? (
-                  <img src={userProfile.photoURL} alt={userProfile.displayName} className="w-full h-full object-cover rounded-xl" />
-                ) : (
-                  userProfile.displayName.charAt(0).toUpperCase()
-                )}
-              </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-sm font-bold text-slate-800">
-                    Olá, {userProfile.displayName}!
-                  </h2>
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">
-                    {userProfile.department || 'Equipe'}
-                  </span>
-                </div>
-                <p className="text-xs text-slate-500">
-                  {userVacationCount > 0 
-                    ? `Você possui ${userVacationCount} período(s) agendado(s) totalizando ${userTotalVacationDays} dias.`
-                    : 'Você ainda não cadastrou períodos de férias este ano.'}
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setIsProfileModalOpen(true)}
-              className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200/70 rounded-xl transition-all cursor-pointer self-start sm:self-auto shrink-0 shadow-2xs"
-            >
-              <UserCog className="w-4 h-4 text-indigo-600" />
-              <span>Editar Meus Dados de Perfil</span>
-            </button>
-          </div>
-        )}
-
-        {/* Top Split: Form + Calendar */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Vacation Registration Form */}
-          <div className="lg:col-span-5 flex flex-col gap-4">
-            <VacationForm
-              onSaveVacation={handleSaveVacation}
-              editingVacation={editingVacation}
-              onCancelEdit={() => setEditingVacation(null)}
-              existingVacations={vacations}
-              isSubmitting={isSubmitting}
-              currentUserProfile={userProfile}
-              currentUserEmail={currentUser?.email || undefined}
-            />
-
-            {/* Helper card */}
-            <div className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-xs flex items-center justify-between text-xs text-slate-600">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold">
-                  i
-                </div>
-                <div>
-                  <p className="font-bold text-slate-800">Transparência da Equipe</p>
-                  <p className="text-[11px] text-slate-500">
-                    Todos visualizam as datas para evitar ausências simultâneas na mesma área.
-                  </p>
-                </div>
-              </div>
-
-              {currentUser && vacations.some(v => v.userId === currentUser.uid) && (
-                <button
-                  onClick={handleClearMyData}
-                  title="Limpar todos os meus registros cadastrados"
-                  className="px-2.5 py-1.5 text-[11px] font-semibold text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer shrink-0"
-                >
-                  Limpar Meus
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Monthly Calendar View */}
-          <div className="lg:col-span-7">
-            <VacationCalendar
-              vacations={vacations}
-              onSelectVacationForEdit={(v) => {
-                setEditingVacation(v);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              currentUserId={currentUser?.uid}
-              isAdmin={isAdmin}
-            />
-          </div>
-        </div>
-
-        {/* Middle Section: Table / List of Registered Entries */}
-        <section>
-          <VacationTable
-            vacations={vacations}
-            onEdit={(v) => {
-              setEditingVacation(v);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onDelete={handleDeleteVacation}
-            currentUserId={currentUser?.uid}
-            isAdmin={isAdmin}
+        {/* Everything below requires an authenticated user */}
+        <Route element={<ProtectedRoute user={currentUser} isLoading={authLoading}>{appShell}</ProtectedRoute>}>
+          <Route index element={calendarPage} />
+          <Route
+            path="ferias"
+            element={
+              <section>
+                <VacationTable
+                  vacations={vacations}
+                  onEdit={openVacationEditor}
+                  onDelete={handleDeleteVacation}
+                  currentUserId={currentUser?.uid}
+                  isAdmin={isAdmin}
+                />
+              </section>
+            }
           />
-        </section>
+          <Route
+            path="metricas"
+            element={
+              <section>
+                <VacationChart vacations={vacations} />
+              </section>
+            }
+          />
+        </Route>
 
-        {/* Bottom Section: Global Metrics Dashboard with Chart.js */}
-        <section>
-          <VacationChart vacations={vacations} />
-        </section>
-      </main>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-500 mt-12">
-        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-700">FériasEquipe</span>
-            <span>•</span>
-            <span>Gestão e Visualização de Férias Compartilhadas</span>
-          </div>
-          <div className="flex items-center gap-4 text-[11px] text-slate-400">
-            <span>Firebase Firestore Enterprise</span>
-            <span>•</span>
-            <span>Autenticação Google</span>
-            <span>•</span>
-            <span>Chart.js Gráficos</span>
-          </div>
-        </div>
-      </footer>
-    </div>
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </>
   );
 }

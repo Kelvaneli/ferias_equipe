@@ -1,4 +1,5 @@
 import React from 'react';
+import { NavLink } from 'react-router';
 import { User as FirebaseUser } from 'firebase/auth';
 import { UserProfile } from '../types';
 import { 
@@ -7,8 +8,16 @@ import {
   LogOut, 
   UserCircle,
   Sparkles,
-  Settings
+  Settings,
+  List,
+  BarChart3
 } from 'lucide-react';
+
+const NAV_LINKS = [
+  { to: '/', label: 'Calendário', icon: CalendarDays },
+  { to: '/ferias', label: 'Lista', icon: List },
+  { to: '/metricas', label: 'Métricas', icon: BarChart3 },
+];
 
 interface NavbarProps {
   user: FirebaseUser | null;
@@ -59,6 +68,30 @@ export const Navbar: React.FC<NavbarProps> = ({
             </p>
           </div>
         </div>
+
+        {/* Route navigation */}
+        {user && (
+          <nav className="flex items-center gap-1">
+            {NAV_LINKS.map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                end={to === '/'}
+                title={label}
+                className={({ isActive }) =>
+                  `flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-semibold rounded-xl transition-colors ${
+                    isActive
+                      ? 'text-indigo-700 bg-indigo-50'
+                      : 'text-slate-500 hover:text-slate-800 hover:bg-slate-100'
+                  }`
+                }
+              >
+                <Icon className="w-4 h-4" />
+                <span className="hidden lg:inline">{label}</span>
+              </NavLink>
+            ))}
+          </nav>
+        )}
 
         {/* Right side controls */}
         <div className="flex items-center gap-2 sm:gap-3">

@@ -19,13 +19,14 @@ Package manager is Bun (`bun.lock`), though npm scripts work too.
 
 ## Deployment
 
-Hosted on Vercel as a static Vite build (`vite build` → `dist/`), with no `vercel.json` and no server code. The app has no client-side routing, so no rewrites are needed. Firebase stays the backend:
+Hosted on Vercel as a static Vite build (`vite build` → `dist/`), with no server code. `vercel.json` rewrites all paths to `index.html` so client-side routes survive a reload. Firebase stays the backend:
 - Changes to `firestore.rules` are **not** deployed by Vercel; they must be published separately (Firebase console or `firebase deploy --only firestore:rules`).
 - Google sign-in only works on domains listed under Firebase Auth → Settings → Authorized domains, so new Vercel domains must be added there.
 
 ## Architecture
 
 - **`src/App.tsx`** holds essentially all state and data logic: auth listener, Firestore `onSnapshot` subscriptions, create/update/delete handlers, demo-data seeding, bulk clear, toasts. Components in `src/components/` are presentational and receive data + callbacks via props.
+- **Routing** (`react-router` v7, `BrowserRouter` in `src/main.tsx`): `/login` is public; `/` (form + calendar), `/ferias` (table) and `/metricas` (chart) are nested under `ProtectedRoute`, which redirects to `/login` (remembering the original path) when signed out. All routes share the `appShell` layout via `<Outlet />`. Editing from the calendar/table navigates to `/` because the form lives there.
 - **`src/firebase.ts`** initializes Firebase from `firebase-applet-config.json` (uses a named Firestore database via `firestoreDatabaseId`). Wrap Firestore write failures with `handleFirestoreError(err, OperationType.X, path)`, which logs and rethrows a JSON-serialized error with auth context.
 - **`src/types.ts`** defines `Vacation` and `UserProfile` plus shared helpers (`getAutoColor`, `calculateDaysBetween` — inclusive day count, `PALETTE_COLORS`, `DEPARTMENTS`).
 
@@ -42,4 +43,4 @@ Any signed-in user can read everything; users can only write their own vacations
 
 ### Offline fallback
 
-Vacations and the user profile are mirrored to `localStorage`. On snapshot errors `syncStatus` becomes `'offline'` and the cache is used; writes while offline are applied only locally (IDs prefixed `local_`) and are not synced back to Firestore later.
+Vacations and the user profile are mirrored to `localStorage` (cleared on logout). On snapshot errors `syncStatus` becomes `'offline'` and the cached list is shown read-only; failed writes show an error toast and are never saved locally. The vacations listener only subscribes when a user is signed in, since the rules deny anonymous reads.

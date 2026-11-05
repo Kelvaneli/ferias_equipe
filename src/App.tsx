@@ -51,7 +51,7 @@ const INITIAL_DEMO_VACATIONS: Omit<Vacation, 'id'>[] = [
     startDate: '2026-10-20',
     endDate: '2026-11-03',
     color: '#3b82f6',
-    notes: 'Férias de primavera com a família',
+    notes: 'Pausa na prestação de serviço de primavera com a família',
     userId: 'demo-user-1',
     userEmail: 'ana.souza@empresa.com'
   },
@@ -78,7 +78,7 @@ const INITIAL_DEMO_VACATIONS: Omit<Vacation, 'id'>[] = [
     startDate: '2026-11-15',
     endDate: '2026-11-22',
     color: '#f59e0b',
-    notes: 'Férias anuais fracionadas',
+    notes: 'Pausa na prestação de serviço anual fracionada',
     userId: 'demo-user-4',
     userEmail: 'diego.ferreira@empresa.com'
   },
@@ -87,7 +87,7 @@ const INITIAL_DEMO_VACATIONS: Omit<Vacation, 'id'>[] = [
     startDate: '2026-10-28',
     endDate: '2026-11-08',
     color: '#ec4899',
-    notes: 'Compensação de banco de horas e férias',
+    notes: 'Compensação de banco de horas e pausa na prestação de serviço',
     userId: 'demo-user-5',
     userEmail: 'mariana.costa@empresa.com'
   }
@@ -313,7 +313,7 @@ export default function App() {
         }
       }
 
-      showToast('Perfil e preferências de férias atualizados com sucesso!', 'success');
+      showToast('Perfil e preferências de pausa na prestação de serviço atualizados com sucesso!', 'success');
     } catch (error: any) {
       console.error('Erro ao salvar perfil:', error);
       showToast('Não foi possível salvar o perfil no banco de dados.', 'error');
@@ -356,7 +356,7 @@ export default function App() {
         }
 
         setEditingVacation(null);
-        showToast('Férias atualizadas com sucesso!', 'success');
+        showToast('Pausa na prestação de serviço atualizada com sucesso!', 'success');
       } else {
         // Create new
         const newId = 'vac_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
@@ -381,10 +381,10 @@ export default function App() {
           handleFirestoreError(err, OperationType.CREATE, `vacations/${newId}`);
         }
 
-        showToast('Férias cadastradas com sucesso no calendário!', 'success');
+        showToast('Pausa na prestação de serviço cadastrada com sucesso no calendário!', 'success');
       }
     } catch (error: any) {
-      console.error('Erro ao salvar férias:', error);
+      console.error('Erro ao salvar pausa na prestação de serviço:', error);
       // Never save only locally: records that don't reach Firestore are lost to the team
       showToast('Não foi possível salvar no banco de dados. Verifique sua conexão e tente novamente.', 'error');
       throw error;
@@ -408,9 +408,9 @@ export default function App() {
       setVacations(updated);
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updated));
 
-      showToast('Registro de férias excluído.', 'info');
+      showToast('Registro de pausa na prestação de serviço excluído.', 'info');
     } catch (error: any) {
-      console.error('Erro ao excluir férias:', error);
+      console.error('Erro ao excluir pausa na prestação de serviço:', error);
       showToast('Não foi possível excluir o registro no banco de dados.', 'error');
     }
   };
@@ -518,9 +518,9 @@ export default function App() {
       <footer className="bg-white border-t border-slate-200/80 py-6 text-center text-xs text-slate-500 mt-12">
         <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            <span className="font-bold text-slate-700">FériasEquipe</span>
+            <span className="font-bold text-slate-700">Pausa na Prestação de Serviço</span>
             <span>•</span>
-            <span>Gestão e Visualização de Férias Compartilhadas</span>
+            <span>Gestão e Visualização Compartilhada de Pausas na Prestação de Serviço</span>
           </div>
           <div className="flex items-center gap-4 text-[11px] text-slate-400">
             <span>Firebase Firestore Enterprise</span>
@@ -563,7 +563,7 @@ export default function App() {
               <p className="text-xs text-slate-500">
                 {userVacationCount > 0
                   ? `Você possui ${userVacationCount} período(s) agendado(s) totalizando ${userTotalVacationDays} dias.`
-                  : 'Você ainda não cadastrou períodos de férias este ano.'}
+                  : 'Você ainda não cadastrou períodos de pausa na prestação de serviço este ano.'}
               </p>
             </div>
           </div>
@@ -657,7 +657,7 @@ export default function App() {
               Limpar meus registros?
             </h3>
             <p className="text-xs text-slate-500 mb-5">
-              Deseja realmente remover os seus {myVacations.length} períodos de férias cadastrados? Esta ação não pode ser desfeita.
+              Deseja realmente remover os seus {myVacations.length} períodos de pausa na prestação de serviço cadastrados? Esta ação não pode ser desfeita.
             </p>
             <div className="flex items-center justify-end gap-2.5">
               <button

@@ -20,11 +20,11 @@ export const LoginPrompt: React.FC<LoginPromptProps> = ({ onLogin, isLoading }) 
         </div>
 
         <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">
-          Planeje e visualize as férias da sua equipe em tempo real
+          Planeje e visualize as pausas na prestação de serviço da sua equipe em tempo real
         </h2>
 
         <p className="text-slate-300 text-sm leading-relaxed mb-6">
-          Acesse para cadastrar e gerenciar seus próprios períodos de férias. Todas as datas da equipe permanecem transparentes e visíveis para evitar conflitos de agenda no projeto.
+          Acesse para cadastrar e gerenciar seus próprios períodos de pausa na prestação de serviço. Todas as datas da equipe permanecem transparentes e visíveis para evitar conflitos de agenda no projeto.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">

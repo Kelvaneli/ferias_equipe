@@ -55,8 +55,8 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-extrabold text-base tracking-tight text-slate-900">
-                Férias<span className="text-indigo-600">Equipe</span>
+              <span className="hidden sm:inline font-extrabold text-base tracking-tight text-slate-900">
+                Pausa na Prestação <span className="text-indigo-600">de Serviço</span>
               </span>
               <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
@@ -64,7 +64,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
             </div>
             <p className="text-[11px] text-slate-500 hidden md:block">
-              Gestão visual e compartilhada de férias e ausências da equipe
+              Gestão visual e compartilhada de pausas na prestação de serviço e ausências da equipe
             </p>
           </div>
         </div>

@@ -271,7 +271,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               </div>
             </div>
 
-            {/* Cor Exclusiva de Férias */}
+            {/* Cor Exclusiva de Pausa na Prestação de Serviço */}
             <div>
               <div className="flex items-center justify-between mb-1.5">
                 <label className="font-bold text-slate-700 uppercase tracking-wider text-[11px] flex items-center gap-1.5">
@@ -359,7 +359,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
 
               <div>
                 <label className="block font-bold text-slate-700 uppercase tracking-wider text-[11px] mb-1">
-                  Bio / Preferências de Férias
+                  Bio / Preferências de Pausa na Prestação de Serviço
                 </label>
                 <div className="relative">
                   <FileText className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -367,7 +367,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                     type="text"
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
-                    placeholder="Ex: Costumo tirar férias em Julho/Dezembro"
+                    placeholder="Ex: Costumo fazer pausa na prestação de serviço em Julho/Dezembro"
                     maxLength={200}
                     className="w-full pl-9 pr-3 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 bg-slate-50"
                   />
@@ -385,7 +385,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                   className="rounded text-indigo-600 focus:ring-indigo-500 w-4 h-4"
                 />
                 <span className="text-[11px]">
-                  <strong>Sincronizar minhas férias:</strong> Atualizar meu nome e cor exclusiva em todos os meus períodos já cadastrados no calendário ({userVacationCount} agendamentos).
+                  <strong>Sincronizar minhas pausas na prestação de serviço:</strong> Atualizar meu nome e cor exclusiva em todos os meus períodos já cadastrados no calendário ({userVacationCount} agendamentos).
                 </span>
               </label>
             )}

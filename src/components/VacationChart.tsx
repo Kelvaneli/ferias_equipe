@@ -65,7 +65,7 @@ export const VacationChart: React.FC<VacationChartProps> = ({ vacations }) => {
         labels,
         datasets: [
           {
-            label: 'Total de Dias de Férias',
+            label: 'Total de Dias de Pausa na Prestação de Serviço',
             data: dataValues,
             backgroundColor: backgroundColors.map(c => c + 'CC'), // slight opacity
             borderColor: borderColors,
@@ -143,7 +143,7 @@ export const VacationChart: React.FC<VacationChartProps> = ({ vacations }) => {
             <Users className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Membros com Férias</p>
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Membros com Pausa na Prestação de Serviço</p>
             <p className="text-xl font-bold text-slate-800">{totalEmployees}</p>
           </div>
         </div>
@@ -163,7 +163,7 @@ export const VacationChart: React.FC<VacationChartProps> = ({ vacations }) => {
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Em Férias Hoje</p>
+            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">Em Pausa na Prestação de Serviço Hoje</p>
             <p className="text-xl font-bold text-slate-800">{activeNowCount} <span className="text-xs font-normal text-slate-400">ativos</span></p>
           </div>
         </div>
@@ -185,7 +185,7 @@ export const VacationChart: React.FC<VacationChartProps> = ({ vacations }) => {
           <div>
             <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-indigo-600" />
-              Métricas Globais: Dias de Férias por Funcionário
+              Métricas Globais: Dias de Pausa na Prestação de Serviço por Funcionário
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               Comparativo de dias totais agendados/tirados por cada colaborador com cores sincronizadas.
@@ -200,8 +200,8 @@ export const VacationChart: React.FC<VacationChartProps> = ({ vacations }) => {
           {labels.length === 0 ? (
             <div className="h-full flex flex-col items-center justify-center text-slate-400 border border-dashed border-slate-200 rounded-xl">
               <BarChart3 className="w-10 h-10 stroke-[1.5] mb-2 text-slate-300" />
-              <p className="text-sm font-medium">Nenhum dado de férias cadastrado ainda.</p>
-              <p className="text-xs text-slate-400">Cadastre férias no formulário para visualizar os gráficos.</p>
+              <p className="text-sm font-medium">Nenhum dado de pausa na prestação de serviço cadastrado ainda.</p>
+              <p className="text-xs text-slate-400">Cadastre uma pausa na prestação de serviço no formulário para visualizar os gráficos.</p>
             </div>
           ) : (
             <canvas ref={canvasRef} />

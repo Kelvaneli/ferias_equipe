@@ -26,7 +26,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ user, onLogin, isLoading }
           <CalendarDays className="w-5 h-5" />
         </div>
         <span className="font-extrabold text-xl tracking-tight text-slate-900">
-          Férias<span className="text-indigo-600">Equipe</span>
+          Pausa na Prestação <span className="text-indigo-600">de Serviço</span>
         </span>
       </div>
 

@@ -135,7 +135,7 @@ export const VacationForm: React.FC<VacationFormProps> = ({
         setNotes('');
       }
     } catch (err: any) {
-      setErrorMsg(err.message || 'Erro ao salvar férias.');
+      setErrorMsg(err.message || 'Erro ao salvar a pausa na prestação de serviço.');
     }
   };
 
@@ -151,12 +151,12 @@ export const VacationForm: React.FC<VacationFormProps> = ({
           </div>
           <div>
             <h3 className="text-base font-bold text-slate-800">
-              {editingVacation ? 'Editar Férias da Equipe' : 'Cadastrar Período de Férias'}
+              {editingVacation ? 'Editar Pausa na Prestação de Serviço' : 'Cadastrar Pausa na Prestação de Serviço'}
             </h3>
             <p className="text-xs text-slate-500">
               {editingVacation 
                 ? 'Atualize as informações do agendamento' 
-                : 'Mapeie as férias de um colaborador no calendário compartilhado'}
+                : 'Mapeie a pausa na prestação de serviço de um colaborador no calendário compartilhado'}
             </p>
           </div>
         </div>
@@ -364,7 +364,7 @@ export const VacationForm: React.FC<VacationFormProps> = ({
             type="text"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Ex: Férias anuais, recesso coletivo, compensação..."
+            placeholder="Ex: Pausa anual na prestação de serviço, recesso coletivo, compensação..."
             maxLength={300}
             className="w-full px-3.5 py-2 rounded-xl border border-slate-300 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50/50 hover:bg-white transition-all text-slate-800"
           />
@@ -387,7 +387,7 @@ export const VacationForm: React.FC<VacationFormProps> = ({
             ) : (
               <>
                 <UserPlus className="w-4 h-4" />
-                Adicionar / Mapear Férias
+                Adicionar Pausa na Prestação de Serviço
               </>
             )}
           </button>

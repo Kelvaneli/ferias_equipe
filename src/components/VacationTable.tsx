@@ -76,7 +76,7 @@ export const VacationTable: React.FC<VacationTableProps> = ({
         <div>
           <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
             <ListFilter className="w-5 h-5 text-indigo-600" />
-            Registros de Férias Cadastrados
+            Registros de Pausa na Prestação de Serviço
           </h3>
           <p className="text-xs text-slate-500">
             {vacations.length} {vacations.length === 1 ? 'período cadastrado' : 'períodos cadastrados'} no sistema
@@ -116,7 +116,7 @@ export const VacationTable: React.FC<VacationTableProps> = ({
           <thead>
             <tr className="bg-slate-50/80 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
               <th className="py-3 px-4">Funcionário</th>
-              <th className="py-3 px-4">Período de Férias</th>
+              <th className="py-3 px-4">Período de Pausa na Prestação de Serviço</th>
               <th className="py-3 px-4">Duração</th>
               <th className="py-3 px-4">Status</th>
               <th className="py-3 px-4">Observações</th>
@@ -130,7 +130,7 @@ export const VacationTable: React.FC<VacationTableProps> = ({
                   <Calendar className="w-8 h-8 mx-auto mb-2 text-slate-300 stroke-[1.5]" />
                   <p className="font-medium text-slate-500">Nenhum registro encontrado.</p>
                   <p className="text-[11px] text-slate-400 mt-0.5">
-                    {searchTerm ? 'Tente ajustar sua busca ou filtro.' : 'Adicione novas férias usando o formulário ao lado.'}
+                    {searchTerm ? 'Tente ajustar sua busca ou filtro.' : 'Adicione uma pausa na prestação de serviço pelo formulário da página Calendário.'}
                   </p>
                 </td>
               </tr>
@@ -233,10 +233,10 @@ export const VacationTable: React.FC<VacationTableProps> = ({
             </div>
 
             <h3 className="text-base font-bold text-slate-800 mb-1">
-              Confirmar exclusão de férias?
+              Confirmar exclusão da pausa na prestação de serviço?
             </h3>
             <p className="text-xs text-slate-500 mb-5">
-              Esta ação removerá o agendamento de férias de forma permanente do banco de dados na nuvem.
+              Esta ação removerá o agendamento de pausa na prestação de serviço de forma permanente do banco de dados na nuvem.
             </p>
 
             <div className="flex items-center justify-end gap-2.5">

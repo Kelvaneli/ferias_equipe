@@ -295,8 +295,8 @@ export const VacationCalendar: React.FC<VacationCalendarProps> = ({
                   </h3>
                   <p className="text-xs text-slate-500">
                     {selectedDayVacations.length === 0
-                      ? 'Nenhum funcionário em férias nesta data.'
-                      : `${selectedDayVacations.length} funcionário(s) em férias neste dia.`}
+                      ? 'Nenhum funcionário em pausa na prestação de serviço nesta data.'
+                      : `${selectedDayVacations.length} funcionário(s) em pausa na prestação de serviço neste dia.`}
                   </p>
                 </div>
               </div>

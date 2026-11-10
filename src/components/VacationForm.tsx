@@ -97,7 +97,7 @@ export const VacationForm: React.FC<VacationFormProps> = ({
 
     const trimmedName = employeeName.trim();
     if (!trimmedName) {
-      setErrorMsg('Por favor, informe o nome do funcionário.');
+      setErrorMsg('Por favor, informe o nome do contratado.');
       return;
     }
 
@@ -193,10 +193,10 @@ export const VacationForm: React.FC<VacationFormProps> = ({
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Nome do funcionário */}
+        {/* Nome do contratado */}
         <div>
           <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-            1. Nome do Funcionário <span className="text-rose-500">*</span>
+            1. Nome do Contratado <span className="text-rose-500">*</span>
           </label>
           <input
             type="text"
@@ -283,7 +283,7 @@ export const VacationForm: React.FC<VacationFormProps> = ({
           </div>
         )}
 
-        {/* Cor do funcionário */}
+        {/* Cor do contratado */}
         <div>
           <div className="flex items-center justify-between mb-1.5">
             <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">

@@ -116,7 +116,7 @@ export const VacationCalendar: React.FC<VacationCalendarProps> = ({
                 onChange={(e) => setEmployeeFilter(e.target.value)}
                 className="bg-transparent text-slate-700 outline-none cursor-pointer font-medium"
               >
-                <option value="ALL">Todos os Funcionários ({uniqueEmployees.length})</option>
+                <option value="ALL">Todos os Contratados ({uniqueEmployees.length})</option>
                 {uniqueEmployees.map(name => (
                   <option key={name} value={name}>{name}</option>
                 ))}
@@ -295,8 +295,8 @@ export const VacationCalendar: React.FC<VacationCalendarProps> = ({
                   </h3>
                   <p className="text-xs text-slate-500">
                     {selectedDayVacations.length === 0
-                      ? 'Nenhum funcionário em pausa na prestação de serviço nesta data.'
-                      : `${selectedDayVacations.length} funcionário(s) em pausa na prestação de serviço neste dia.`}
+                      ? 'Nenhum contratado em pausa na prestação de serviço nesta data.'
+                      : `${selectedDayVacations.length} contratado(s) em pausa na prestação de serviço neste dia.`}
                   </p>
                 </div>
               </div>

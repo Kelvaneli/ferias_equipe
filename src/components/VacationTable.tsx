@@ -115,7 +115,7 @@ export const VacationTable: React.FC<VacationTableProps> = ({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-slate-50/80 text-[11px] font-bold text-slate-500 uppercase tracking-wider border-b border-slate-100">
-              <th className="py-3 px-4">Funcionário</th>
+              <th className="py-3 px-4">Contratado</th>
               <th className="py-3 px-4">Período de Pausa na Prestação de Serviço</th>
               <th className="py-3 px-4">Duração</th>
               <th className="py-3 px-4">Status</th>
@@ -142,7 +142,7 @@ export const VacationTable: React.FC<VacationTableProps> = ({
 
                 return (
                   <tr key={vac.id} className="hover:bg-slate-50/60 transition-colors">
-                    {/* Funcionário */}
+                    {/* Contratado */}
                     <td className="py-3.5 px-4">
                       <div className="flex items-center gap-2.5">
                         <span

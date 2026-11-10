@@ -185,7 +185,7 @@ export const VacationChart: React.FC<VacationChartProps> = ({ vacations }) => {
           <div>
             <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
               <BarChart3 className="w-5 h-5 text-indigo-600" />
-              Métricas Globais: Dias de Pausa na Prestação de Serviço por Funcionário
+              Métricas Globais: Dias de Pausa na Prestação de Serviço por Contratado
             </h3>
             <p className="text-xs text-slate-500 mt-0.5">
               Comparativo de dias totais agendados/tirados por cada colaborador com cores sincronizadas.

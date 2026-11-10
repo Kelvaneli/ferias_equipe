@@ -30,7 +30,7 @@ export const LoginPrompt: React.FC<LoginPromptProps> = ({ onLogin, isLoading }) 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-8">
           <div className="flex items-center gap-2.5 text-xs text-indigo-100 bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
             <Check className="w-4 h-4 text-emerald-400 shrink-0" />
-            <span>Calendário visual com cores por funcionário</span>
+            <span>Calendário visual com cores por contratado</span>
           </div>
           <div className="flex items-center gap-2.5 text-xs text-indigo-100 bg-white/5 border border-white/10 rounded-xl p-3 backdrop-blur-xs">
             <Check className="w-4 h-4 text-emerald-400 shrink-0" />
